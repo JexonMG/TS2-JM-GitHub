@@ -54,6 +54,33 @@ def registrar_salida(conn):
     except Exception as e:
         print("Error al registrar la salida:", e)
 
+# Generar Reporte Ganancias
+def generar_reporte_ganancias(conn):
+    try:
+        cur = conn.cursor()
+
+        cur.execute("SELECT COUNT(*) * 5 FROM registros WHERE fecha_salida IS NOT NULL;")
+        total_ganancias = cur.fetchone()[0]
+
+        print(f"Ganancias totales hasta la fecha: ${total_ganancias:.2f}")
+    except Exception as e:
+        print("Error al generar el reporte de ganancias:", e)
+
+# Generar Reporte de Vehículos
+def generar_reporte_vehiculos(conn):
+    try:
+        cur = conn.cursor()
+
+        cur.execute("SELECT marca, COUNT(*) FROM registros GROUP BY marca;")
+        resultados = cur.fetchall()
+
+        print("Reporte de vehículos:")
+        for resultado in resultados:
+            marca, cantidad = resultado
+            print(f"{marca}: {cantidad}")
+    except Exception as e:
+        print("Error al generar el reporte de vehículos:", e)
+
 # Función principal
 def main():
     conn = connect_to_db()
@@ -61,7 +88,9 @@ def main():
         while True:
             print("1. Registrar entrada")
             print("2. Registrar salida")
-            print("3. Salir")
+            print("3. Generar Reporte Ganancias")
+            print("4. Generar Reporte de Vehículos")
+            print("5. Salir")
             opcion = input("Seleccione una opción: ")
 
             if opcion == "1":
@@ -69,6 +98,10 @@ def main():
             elif opcion == "2":
                 registrar_salida(conn)
             elif opcion == "3":
+                generar_reporte_ganancias(conn)
+            elif opcion == "4":
+                generar_reporte_vehiculos(conn)
+            elif opcion == "5":
                 conn.close()
                 print("¡Hasta luego!")
                 break
@@ -77,4 +110,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
